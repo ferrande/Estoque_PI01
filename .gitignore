@@ -45,7 +45,10 @@ coverage/
 htmlcov/
 
 # Flask / Django specific
-instance/
+instance/*
+
+# Don't ignore the database file
+!instance/estoque.db
 
 # mypy / static type check
 .mypy_cache/
