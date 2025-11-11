@@ -86,14 +86,14 @@ def list_items():
         else:
             items = session.query(Item).all()
 
-    lista = [
+    list = [
         {
             'id': i.id,
             'name': i.name,
             'price': i.price,
         } for i in items
     ]
-    return jsonify(lista), 200
+    return jsonify(list), 200
 
 @api_bp.route('/items/<int:id>', methods=['PUT'])
 @login_required
@@ -150,3 +150,21 @@ def add_lot():
         session.commit()
 
     return jsonify({'mensagem': 'Lote adicionado com sucesso'}), 201
+
+@api_bp.route('/lots', methods=['GET'])
+@login_required
+def list_lots():
+
+    with SessionLocal() as session:
+        lots = session.query(Lot).all()
+
+    list = [
+        {
+            'id': l.id,
+            'number': l.number,
+            'quantity': l.quantity,
+            'expiry_date': l.expiry_date,
+            'item_id': l.item_id
+        } for l in lots
+    ]
+    return jsonify(list), 200
