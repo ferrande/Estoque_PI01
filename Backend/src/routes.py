@@ -105,7 +105,8 @@ def edit_item(id):
             item = session.query(Item).filter_by(id=id).first()
             if item is not None:
                 item.name = str(data['name'])
-                item.price = float(str(data['price']).replace(',', '.'))
+                priceStr = str(data['price']).replace(',', '.')
+                item.price = float(priceStr)
                 session.commit() 
             else:
                 return jsonify({'erro': 'Item não foi encontrado'}), 404
@@ -114,6 +115,19 @@ def edit_item(id):
 
     return jsonify({'mensagem': 'Item atualizado com sucesso'}), 200
 
+@api_bp.route('/items/<int:id>', methods=['GET'])
+@login_required
+def get_item(id):
+
+    with SessionLocal() as session:
+        item = session.query(Item).filter_by(id=id).first()
+        if item is not None:
+            return jsonify({
+                'id': item.id,
+                'name': item.name,
+                'price': item.price,
+            }), 200
+        return jsonify({'erro': 'Item não foi encontrado'}), 404
 
 @api_bp.route('/items/<int:id>', methods=['DELETE'])
 @login_required
@@ -203,3 +217,4 @@ def delete_lot(id):
         session.delete(lot)
         session.commit()
     return jsonify({'mensagem': 'Lote deletado com sucesso'}), 200
+
