@@ -169,6 +169,29 @@ def list_lots():
     ]
     return jsonify(list), 200
 
+@api_bp.route('/lots/<int:id>', methods=['PUT'])
+@login_required
+def edit_lot(id):
+    data = request.get_json() or {}
+
+    date_format = "%Y-%m-%d"
+
+    try:
+        with SessionLocal() as session:
+            lot = session.query(Lot).filter_by(id=id).first()
+            if lot is not None:
+                lot.number = str(data['number'])
+                lot.quantity = int(data['quantity'])
+                lot.expiry_date = datetime.strptime(data['expiry_date'], date_format)
+                lot.item_id = int(data['item_id'])
+                session.commit() 
+            else:
+                return jsonify({'erro': 'Lote não foi encontrado'}), 404
+    except (KeyError, ValueError):
+        return jsonify({'erro': 'Dados inválidos ou ausentes'}), 400
+
+    return jsonify({'mensagem': 'Lote atualizado com sucesso'}), 200
+
 @api_bp.route('/lots/<int:id>', methods=['DELETE'])
 @login_required
 def delete_lot(id):
