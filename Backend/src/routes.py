@@ -168,3 +168,15 @@ def list_lots():
         } for l in lots
     ]
     return jsonify(list), 200
+
+@api_bp.route('/lots/<int:id>', methods=['DELETE'])
+@login_required
+def delete_lot(id):
+
+    with SessionLocal() as session:
+        lot = session.query(Lot).filter_by(id=id).first()
+        if not lot:
+            return jsonify({'erro': 'Lote não foi encontrado'}), 404
+        session.delete(lot)
+        session.commit()
+    return jsonify({'mensagem': 'Lote deletado com sucesso'}), 200
