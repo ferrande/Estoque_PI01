@@ -17,7 +17,7 @@ function StockMain() {
     }
   }
 
-  function handleAddProduct() {
+  function handleAddItem() {
     setIsStockModalVisible(true);
   }
 
@@ -38,10 +38,10 @@ function StockMain() {
       )}
       <div className="wrapper-main">
         <h1 className="heading-main">Estoque</h1>
-        <div className="wrapper-product-actions">
+        <div className="wrapper-item-actions">
           <input
             type="search"
-            className="search-product body-regular"
+            className="search-item body-regular"
             placeholder="Procurar por produto..."
             value={inputSearch}
             onChange={(event) => {
@@ -49,8 +49,8 @@ function StockMain() {
             }}
           />
           <button
-            className="add-product button-semibold"
-            onClick={() => handleAddProduct()}
+            className="add-item button-semibold"
+            onClick={() => handleAddItem()}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

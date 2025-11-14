@@ -23,29 +23,25 @@ declare module "@tanstack/table-core" {
   }
 }
 
-type ProdutoAPI = {
+type ItemAPI = {
   id: number;
-  nome: string;
-  preco: number;
-  quantidade: number;
-  validade: string;
+  name: string;
+  price: number;
 };
 
-export type Produto = {
+export type Item = {
   id: number;
-  produto: string;
-  quantidade: number;
-  valor: number;
-  validade: string;
+  name: string;
+  price: number;
 };
 
 const Table = forwardRef((_, ref) => {
-  const [data, setData] = useState<Produto[]>([]);
-  const [productToEdit, setProductToEdit] = useState<Produto>();
+  const [data, setData] = useState<Item[]>([]);
+  const [itemToEdit, setItemToEdit] = useState<Item>();
 
   const [isStockEditModalVisible, setIsStockEditModalVisible] = useState(false);
-  function handleEditProduct(produto: Produto) {
-    setProductToEdit(produto);
+  function handleEditItem(item: Item) {
+    setItemToEdit(item);
     setIsStockEditModalVisible(true);
   }
 
@@ -58,7 +54,7 @@ const Table = forwardRef((_, ref) => {
     try {
       const token = localStorage.getItem("authToken");
       const response = await fetch(
-        "http://localhost:5000/produtos?productName=" + inputSearch,
+        "http://localhost:5000/api/items?name=" + inputSearch,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -66,18 +62,11 @@ const Table = forwardRef((_, ref) => {
         }
       );
 
-      const formatDateWithoutTimezone = (isoDate: string): string => {
-        const [year, month, day] = isoDate.split("-");
-        return `${day}/${month}/${year}`; // Formato DD/MM/YYYY
-      };
-
-      const result: ProdutoAPI[] = await response.json();
+      const result: ItemAPI[] = await response.json();
       const formattedData = result.map((item) => ({
         id: item.id,
-        produto: item.nome,
-        quantidade: item.quantidade,
-        valor: item.preco,
-        validade: formatDateWithoutTimezone(item.validade),
+        name: item.name,
+        price: item.price,
       }));
       setData(formattedData);
     } catch (error) {
@@ -93,12 +82,12 @@ const Table = forwardRef((_, ref) => {
     reloadData: fetchData,
   }));
 
-  const columnHelper = createColumnHelper<Produto>();
+  const columnHelper = createColumnHelper<Item>();
 
-  async function productDelete(id: number) {
+  async function itemDelete(id: number) {
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch("http://localhost:5000/produtos/" + id, {
+      const response = await fetch("http://localhost:5000/api/items/" + id, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -118,25 +107,15 @@ const Table = forwardRef((_, ref) => {
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor("produto", {
+      columnHelper.accessor("name", {
         header: "Produto",
-        cell: (info: CellContext<Produto, string>) => info.getValue(),
+        cell: (info: CellContext<Item, string>) => info.getValue(),
         meta: { align: "left" },
       }),
-      columnHelper.accessor("quantidade", {
-        header: "Quantidade",
-        cell: (info: CellContext<Produto, number>) => info.getValue(),
-        meta: { align: "left" },
-      }),
-      columnHelper.accessor("valor", {
+      columnHelper.accessor("price", {
         header: "Valor",
-        cell: (info: CellContext<Produto, number>) =>
+        cell: (info: CellContext<Item, number>) =>
           `R$ ${info.getValue().toFixed(2)}`,
-        meta: { align: "left" },
-      }),
-      columnHelper.accessor("validade", {
-        header: "Validade",
-        cell: (info: CellContext<Produto, string>) => info.getValue(),
         meta: { align: "left" },
       }),
       columnHelper.display({
@@ -144,13 +123,13 @@ const Table = forwardRef((_, ref) => {
         header: "Ações",
         cell: (cell) => {
           const handleEdit = () => {
-            const produto = cell.row.original;
-            handleEditProduct(produto);
+            const item = cell.row.original;
+            handleEditItem(item);
           };
 
           const handleDelete = () => {
-            const produto = cell.row.original.id;
-            productDelete(produto);
+            const item = cell.row.original.id;
+            itemDelete(item);
           };
 
           return (
@@ -223,9 +202,9 @@ const Table = forwardRef((_, ref) => {
 
   return (
     <div className="table-container">
-      {isStockEditModalVisible && productToEdit && (
+      {isStockEditModalVisible && itemToEdit && (
         <StockEditModal
-          productToEdit={productToEdit}
+          itemToEdit={itemToEdit}
           onClose={() => handleCloseStockEditModal()}
         />
       )}

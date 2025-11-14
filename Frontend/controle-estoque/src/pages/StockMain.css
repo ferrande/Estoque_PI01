@@ -12,13 +12,13 @@
   align-self: flex-start;
 }
 
-.wrapper-product-actions {
+.wrapper-item-actions {
   display: flex;
   margin: 1.5rem 0 1rem 0;
   justify-content: space-between;
 }
 
-.search-product {
+.search-item {
   display: flex;
   flex-grow: 1;
   margin: 0 1rem 0 0;
@@ -29,7 +29,7 @@
   color: var(--neutral-dark);
 }
 
-.add-product {
+.add-item {
   display: inline-flex;
   height: 61px;
   padding: 8px 64px;
@@ -42,13 +42,13 @@
   color: var(--neutral-white);
 }
 
-.add-product:hover {
+.add-item:hover {
   background: var(--btn-blue-hover);
   border: 1px solid var(--btn-blue-hover);
   cursor: pointer;
 }
 
-.add-product:active {
+.add-item:active {
   background: var(--btn-blue-active);
   border: 1px solid var(--btn-blue-active);
   cursor: pointer;
