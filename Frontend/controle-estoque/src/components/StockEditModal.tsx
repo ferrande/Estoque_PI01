@@ -1,66 +1,53 @@
 import { useState, useEffect } from "react";
 import ButtonMain from "./ButtonMain";
 import "./StockEditModal.css";
-import type { Produto } from "./Table";
+import type { Item } from "./Table";
 
 type Props = {
   onClose: () => void;
-  productToEdit: Produto;
+  itemToEdit: Item;
 };
 
-const StockEditModal = ({ onClose, productToEdit }: Props) => {
-  const [productName, setProductName] = useState("");
-  const [productQuantity, setProductQuantity] = useState<number | "">("");
-  const [productPrice, setProductPrice] = useState<number | "">("");
-  const [productExpiry, setProductExpiry] = useState<Date | "">("");
-  const [productId, setProductId] = useState<number | "">("");
+const StockEditModal = ({ onClose, itemToEdit }: Props) => {
+  const [itemName, setItemName] = useState("");
+  const [itemPrice, setItemPrice] = useState<number | "">("");
+  const [itemId, setItemId] = useState<number | "">("");
 
   useEffect(() => {
-    if (productToEdit) {
-      setProductName(productToEdit.produto);
-      setProductQuantity(productToEdit.quantidade);
-      setProductPrice(productToEdit.valor);
-      setProductExpiry(parseDateFromLocale(productToEdit.validade) || "");
-      setProductId(productToEdit.id);
+    if (itemToEdit) {
+      setItemName(itemToEdit.name);
+      setItemPrice(itemToEdit.price);
+      setItemId(itemToEdit.id);
     }
-  }, [productToEdit]);
-
-  const parseDateFromLocale = (dateString: string): Date | "" => {
-    const [day, month, year] = dateString.split("/").map(Number);
-    if (!day || !month || !year) return "";
-    return new Date(year, month - 1, day);
-  };
+  }, [itemToEdit]);
 
   const handleSave = async () => {
-    if (!productName || !productQuantity || !productPrice || !productExpiry) {
+    if (!itemName || !itemPrice) {
       alert("Por favor, preencha todos os campos corretamente.");
       return;
     }
 
-    console.log(productExpiry.toISOString().split("T")[0]);
-    const productData = {
-      nome: productName,
-      preco: productPrice,
-      quantidade: productQuantity,
-      validade: productExpiry.toISOString().split("T")[0],
+    const itemData = {
+      name: itemName,
+      price: itemPrice,
     };
 
     try {
       const token = localStorage.getItem("authToken");
       const response = await fetch(
-        "http://localhost:5000/produtos/" + productId,
+        "http://localhost:5000/api/items/" + itemId,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(productData),
+          body: JSON.stringify(itemData),
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to save product");
+        throw new Error("Não foi possível editar o produto.");
       }
 
       onClose();
@@ -91,60 +78,27 @@ const StockEditModal = ({ onClose, productToEdit }: Props) => {
         </div>
 
         <div className="input-group">
-          <label htmlFor="product-name">Nome do produto</label>
+          <label htmlFor="item-name">Nome do produto</label>
           <input
-            id="product-name"
+            id="item-name"
             type="text"
             className="input-modal"
             placeholder="Coca-Cola Lata"
-            value={productName}
-            onChange={(e) => setProductName(e.target.value)}
+            value={itemName}
+            onChange={(e) => setItemName(e.target.value)}
           />
 
-          <label htmlFor="product-quantity">Quantidade</label>
+          <label htmlFor="item-price">Valor (R$)</label>
           <input
-            id="product-quantity"
-            type="number"
-            className="input-modal"
-            placeholder="50"
-            value={productQuantity}
-            onChange={(e) =>
-              setProductQuantity(
-                e.target.value ? parseInt(e.target.value, 10) : ""
-              )
-            }
-          />
-
-          <label htmlFor="product-price">Valor (R$)</label>
-          <input
-            id="product-price"
+            id="item-price"
             type="number"
             step="0.01"
             className="input-modal"
             placeholder="5.99"
-            value={productPrice}
+            value={itemPrice}
             onChange={(e) =>
-              setProductPrice(e.target.value ? parseFloat(e.target.value) : "")
+              setItemPrice(e.target.value ? parseFloat(e.target.value) : "")
             }
-          />
-
-          <label htmlFor="product-expiry">Validade</label>
-          <input
-            id="product-expiry"
-            type="date"
-            className="input-modal"
-            value={
-              productExpiry ? productExpiry.toISOString().split("T")[0] : ""
-            }
-            onChange={(e) => {
-              const dateParts = e.target.value.split("-");
-              const utcDate = new Date(
-                parseInt(dateParts[0], 10), // Ano
-                parseInt(dateParts[1], 10) - 1, // Mês (0-indexado)
-                parseInt(dateParts[2], 10) // Dia
-              );
-              setProductExpiry(e.target.value ? utcDate : "");
-            }}
           />
         </div>
         <ButtonMain text="Salvar" disabled={false} onClick={handleSave} />
