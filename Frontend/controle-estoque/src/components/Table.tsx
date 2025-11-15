@@ -4,6 +4,7 @@ import {
   useEffect,
   forwardRef,
   useImperativeHandle,
+  useCallback,
 } from "react";
 import "./Table.css";
 import {
@@ -15,6 +16,7 @@ import {
 } from "@tanstack/react-table";
 import type { CellContext } from "@tanstack/table-core";
 import EditItemModal from "./EditItemModal";
+import LotDrawer from "./LotDrawer";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -38,6 +40,9 @@ export type Item = {
 const Table = forwardRef((_, ref) => {
   const [data, setData] = useState<Item[]>([]);
   const [itemToEdit, setItemToEdit] = useState<Item>();
+  const [lotDrawerId, setLotDrawerId] = useState<number | undefined>();
+  const [lotDrawerName, setLotDrawerName] = useState<string>("");
+  const [isLotDrawerOpen, setIsLotDrawerOpen] = useState(false);
 
   const [isEditItemModalVisible, setIsEditItemModalVisible] = useState(false);
   function handleEditItem(item: Item) {
@@ -84,7 +89,11 @@ const Table = forwardRef((_, ref) => {
 
   const columnHelper = createColumnHelper<Item>();
 
-  async function itemDelete(id: number) {
+  const itemDelete = useCallback(async (id: number) => {
+    if (!confirm("Tem certeza que deseja deletar este item?")) {
+      return;
+    }
+
     try {
       const token = localStorage.getItem("authToken");
       const response = await fetch("http://localhost:5000/api/items/" + id, {
@@ -103,17 +112,19 @@ const Table = forwardRef((_, ref) => {
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
     }
-  }
+  }, []);
 
   const columns = useMemo(
     () => [
       columnHelper.accessor("name", {
         header: "Produto",
+        size: 200,
         cell: (info: CellContext<Item, string>) => info.getValue(),
         meta: { align: "left" },
       }),
       columnHelper.accessor("price", {
         header: "Valor",
+        size: 100,
         cell: (info: CellContext<Item, number>) =>
           `R$ ${info.getValue().toFixed(2)}`,
         meta: { align: "left" },
@@ -121,7 +132,15 @@ const Table = forwardRef((_, ref) => {
       columnHelper.display({
         id: "acoes",
         header: "Ações",
+        size: 120,
         cell: (cell) => {
+          const handleDetails = () => {
+            const itemId = cell.row.original.id;
+            const itemName = cell.row.original.name;
+            setLotDrawerId(itemId);
+            setLotDrawerName(itemName);
+            setIsLotDrawerOpen(true);
+          };
           const handleEdit = () => {
             const item = cell.row.original;
             handleEditItem(item);
@@ -133,63 +152,82 @@ const Table = forwardRef((_, ref) => {
           };
 
           return (
-            <>
-              <button className="btn-action" onClick={handleEdit}>
+            <div className="actions-container">
+              <button className="btn-action" onClick={handleDetails}>
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
+                  width="25"
                   height="24"
-                  viewBox="0 0 24 24"
+                  viewBox="0 0 25 24"
                   fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <g clip-path="url(#clip0_111_523)">
+                  <g clip-path="url(#clip0_190_1827)">
                     <path
-                      d="M22.824 1.176C22.0597 0.44565 21.0432 0.0380859 19.986 0.0380859C18.9288 0.0380859 17.9124 0.44565 17.148 1.176L1.61101 16.713C1.09893 17.2223 0.69288 17.828 0.416359 18.4952C0.139839 19.1624 -0.00167058 19.8778 1.48806e-05 20.6V22.5C1.48806e-05 22.8978 0.15805 23.2794 0.439355 23.5607C0.720659 23.842 1.10219 24 1.50001 24H3.40001C4.12257 24.0019 4.83833 23.8606 5.50588 23.584C6.17343 23.3075 6.7795 22.9013 7.28901 22.389L22.824 6.852C23.5756 6.09874 23.9977 5.07809 23.9977 4.014C23.9977 2.9499 23.5756 1.92926 22.824 1.176V1.176ZM5.16601 20.268C4.6964 20.7346 4.062 20.9975 3.40001 21H3.00001V20.6C3.00207 19.9373 3.26505 19.3022 3.73201 18.832L15.3 7.267L16.733 8.7L5.16601 20.268ZM20.7 4.731L18.854 6.58L17.42 5.146L19.27 3.3C19.463 3.11558 19.7196 3.01266 19.9865 3.01266C20.2534 3.01266 20.5101 3.11558 20.703 3.3C20.8916 3.49056 20.9972 3.748 20.9966 4.01612C20.996 4.28423 20.8894 4.54123 20.7 4.731V4.731Z"
+                      d="M11.1464 7H13.1731V9H11.1464V7ZM11.1464 11H13.1731V17H11.1464V11ZM12.1597 2C6.56625 2 2.02661 6.48 2.02661 12C2.02661 17.52 6.56625 22 12.1597 22C17.7532 22 22.2929 17.52 22.2929 12C22.2929 6.48 17.7532 2 12.1597 2ZM12.1597 20C7.69103 20 4.05324 16.41 4.05324 12C4.05324 7.59 7.69103 4 12.1597 4C16.6284 4 20.2662 7.59 20.2662 12C20.2662 16.41 16.6284 20 12.1597 20Z"
                       fill="#0F64E5"
                     />
                   </g>
                   <defs>
-                    <clipPath id="clip0_111_523">
-                      <rect width="24" height="24" fill="white" />
+                    <clipPath id="clip0_190_1827">
+                      <rect width="24.3195" height="24" fill="white" />
                     </clipPath>
                   </defs>
                 </svg>
+                <span>Detalhes</span>
+              </button>
+
+              <button className="btn-action" onClick={handleEdit}>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5.06575 18.9283H6.49675L15.8653 9.55975L14.4463 8.13475L5.06575 17.5153V18.9283ZM2.79675 21.2033V16.5708L15.9848 3.40175C16.1928 3.20642 16.4236 3.05675 16.6773 2.95275C16.9308 2.84875 17.1968 2.79675 17.4755 2.79675C17.7502 2.79675 18.0185 2.84875 18.2805 2.95275C18.5423 3.05675 18.7729 3.21275 18.9723 3.42075L20.6043 5.05975C20.8123 5.25509 20.9651 5.48475 21.0628 5.74875C21.1604 6.01259 21.2093 6.2775 21.2093 6.5435C21.2093 6.82217 21.1604 7.08925 21.0628 7.34475C20.9651 7.60042 20.8123 7.83225 20.6043 8.04025L7.44125 21.2033H2.79675ZM15.1463 8.85375L14.4463 8.13475L15.8653 9.55975L15.1463 8.85375Z"
+                    fill="#D27000"
+                  />
+                </svg>
+
+                <span>Editar</span>
               </button>
               <button className="btn-action" onClick={handleDelete}>
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="22"
+                  width="24"
                   height="24"
-                  viewBox="0 0 22 24"
+                  viewBox="0 0 24 24"
                   fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M22 4.5C22 3.67158 21.3285 3 20.5 3H16.724C16.0921 1.20736 14.4007 0.00609375 12.5 0H9.50002C7.59928 0.00609375 5.90789 1.20736 5.27602 3H1.5C0.671578 3 0 3.67158 0 4.5C0 5.32842 0.671578 6 1.5 6H2.00002V18.5C2.00002 21.5376 4.46245 24 7.5 24H14.5C17.5376 24 20 21.5376 20 18.5V6H20.5C21.3285 6 22 5.32842 22 4.5ZM17 18.5C17 19.8807 15.8807 21 14.5 21H7.5C6.1193 21 5.00002 19.8807 5.00002 18.5V6H17V18.5Z"
-                    fill="#E4515E"
-                  />
-                  <path
-                    d="M8.5 18C9.32842 18 10 17.3284 10 16.5V10.5C10 9.67158 9.32842 9 8.5 9C7.67158 9 7 9.67158 7 10.5V16.5C7 17.3284 7.67158 18 8.5 18Z"
-                    fill="#E4515E"
-                  />
-                  <path
-                    d="M13.5 18C14.3284 18 15 17.3284 15 16.5V10.5C15 9.67158 14.3284 9 13.5 9C12.6716 9 12 9.67158 12 10.5V16.5C12 17.3284 12.6716 18 13.5 18Z"
-                    fill="#E4515E"
+                    d="M6.93423 21.2033C6.30456 21.2033 5.76798 20.9815 5.32448 20.538C4.88098 20.0945 4.65923 19.5579 4.65923 18.9283V6.06576C4.34006 6.06576 4.07065 5.95601 3.85098 5.73651C3.63148 5.51684 3.52173 5.24743 3.52173 4.92826C3.52173 4.60909 3.63148 4.33968 3.85098 4.12001C4.07065 3.90051 4.34006 3.79076 4.65923 3.79076H8.86248C8.86248 3.47159 8.97223 3.20218 9.19173 2.98251C9.4114 2.76301 9.68081 2.65326 9.99998 2.65326H13.988C14.3071 2.65326 14.5766 2.76301 14.7962 2.98251C15.0157 3.20218 15.1255 3.47159 15.1255 3.79076H19.3407C19.6599 3.79076 19.9293 3.90051 20.149 4.12001C20.3685 4.33968 20.4782 4.60909 20.4782 4.92826C20.4782 5.24743 20.3685 5.51684 20.149 5.73651C19.9293 5.95601 19.6599 6.06576 19.3407 6.06576V18.9283C19.3407 19.5579 19.119 20.0945 18.6755 20.538C18.232 20.9815 17.6954 21.2033 17.0657 21.2033H6.93423ZM17.0657 6.06576H6.93423V18.9283H17.0657V6.06576ZM9.96423 16.994C10.2634 16.994 10.5158 16.8912 10.7215 16.6855C10.9271 16.48 11.03 16.2276 11.03 15.9283V9.05976C11.03 8.76043 10.9271 8.50801 10.7215 8.30251C10.5158 8.09684 10.2634 7.99401 9.96423 7.99401C9.6649 7.99401 9.4114 8.09684 9.20373 8.30251C8.99623 8.50801 8.89248 8.76043 8.89248 9.05976V15.9283C8.89248 16.2276 8.99623 16.48 9.20373 16.6855C9.4114 16.8912 9.6649 16.994 9.96423 16.994ZM14.0417 16.994C14.3411 16.994 14.5936 16.8912 14.7992 16.6855C15.0047 16.48 15.1075 16.2276 15.1075 15.9283V9.05976C15.1075 8.76043 15.0047 8.50801 14.7992 8.30251C14.5936 8.09684 14.3411 7.99401 14.0417 7.99401C13.7426 7.99401 13.4891 8.09684 13.2815 8.30251C13.0738 8.50801 12.97 8.76043 12.97 9.05976V15.9283C12.97 16.2276 13.0738 16.48 13.2815 16.6855C13.4891 16.8912 13.7426 16.994 14.0417 16.994Z"
+                    fill="#D41A1A"
                   />
                 </svg>
+
+                <span>Excluir</span>
               </button>
-            </>
+            </div>
           );
         },
         meta: { align: "right" },
       }),
     ],
-    []
+    [columnHelper, itemDelete]
   );
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 4,
   });
+
+  useEffect(() => {
+    setPagination({
+      pageIndex: 0,
+      pageSize: 4,
+    });
+  }, [data]);
 
   const table = useReactTable({
     data,
@@ -202,6 +240,13 @@ const Table = forwardRef((_, ref) => {
 
   return (
     <div className="table-container">
+      <LotDrawer
+        isOpen={isLotDrawerOpen}
+        itemId={lotDrawerId || 0}
+        itemName={lotDrawerName}
+        onClose={() => setIsLotDrawerOpen(false)}
+      />
+
       {isEditItemModalVisible && itemToEdit && (
         <EditItemModal
           itemToEdit={itemToEdit}

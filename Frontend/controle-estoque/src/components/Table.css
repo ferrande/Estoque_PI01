@@ -1,9 +1,6 @@
 .table-container {
   display: flex;
   flex-direction: column;
-  /* border-radius: 8px;
-  padding: 16px;
-  background-color: var(--neutral-white); */
 }
 
 .table-custom {
@@ -23,24 +20,58 @@
 
 .table-custom th,
 .table-custom td {
-  padding: 32px;
+  padding: 16px 32px;
   border-bottom: 1px solid var(--background-light);
 }
 
 .col-left {
   text-align: left;
+  width: 60%;
 }
 
 .col-right {
   text-align: right;
+  width: 40%;
+  padding: 32px 8px !important;
 }
 
 .btn-action {
-  padding: 4px 8px;
-  font-size: 0.85rem;
+  padding: 4px 6px;
+  font-size: 0.75rem;
   background: none;
   border: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: inherit;
+}
+
+.btn-action svg {
+  flex-shrink: 0;
+}
+
+.btn-action span {
+  white-space: nowrap;
+}
+
+.btn-action:nth-child(1) {
+  color: #0f64e5;
+}
+
+.btn-action:nth-child(2) {
+  color: #d27000;
+}
+
+.btn-action:nth-child(3) {
+  color: #e4515e;
+}
+
+.actions-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .pagination {
@@ -57,20 +88,3 @@
   background-color: var(--neutral-white);
   cursor: pointer;
 }
-
-/* .stock-table {
-  display: flex;
-  width: 100%;
-  padding: 1.5rem;
-  flex-direction: column; 
-  border-radius: 8px;
-  background: var(--neutral-white);
-}
-
-.stock-table th {
-  padding: 0 0 3rem 0;
-}
-
-.stock-table td {
-  padding: 0 0 3rem 0;
-} */

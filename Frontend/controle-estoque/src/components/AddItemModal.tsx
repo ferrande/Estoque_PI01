@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ButtonMain from "./ButtonMain";
-import "./AddItemModal.css";
+import "./Modal.css";
 
 type Props = {
   onClose: () => void;

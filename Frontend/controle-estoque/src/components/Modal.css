@@ -47,6 +47,26 @@
   margin-bottom: 24px;
 }
 
+.input-modal::placeholder {
+  color: rgba(128, 128, 128, 0.4);
+  opacity: 1;
+}
+
+.input-modal::-webkit-input-placeholder {
+  color: rgba(128, 128, 128, 0.4);
+  opacity: 1;
+}
+
+.input-modal::-moz-placeholder {
+  color: rgba(128, 128, 128, 0.4);
+  opacity: 1;
+}
+
+.input-modal:-ms-input-placeholder {
+  color: rgba(128, 128, 128, 0.4);
+  opacity: 1;
+}
+
 .close-modal {
   cursor: pointer;
 }
