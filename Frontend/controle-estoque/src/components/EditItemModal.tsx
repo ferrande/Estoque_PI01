@@ -1,14 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ButtonMain from "./ButtonMain";
-import "./StockModal.css";
+import "./EditItemModal.css";
+import type { Item } from "./Table";
 
 type Props = {
   onClose: () => void;
+  itemToEdit: Item;
 };
 
-const StockModal = ({ onClose }: Props) => {
+const EditItemModal = ({ onClose, itemToEdit }: Props) => {
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState<number | "">("");
+  const [itemId, setItemId] = useState<number | "">("");
+
+  useEffect(() => {
+    if (itemToEdit) {
+      setItemName(itemToEdit.name);
+      setItemPrice(itemToEdit.price);
+      setItemId(itemToEdit.id);
+    }
+  }, [itemToEdit]);
 
   const handleSave = async () => {
     if (!itemName || !itemPrice) {
@@ -23,17 +34,20 @@ const StockModal = ({ onClose }: Props) => {
 
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch("http://localhost:5000/api/items", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(itemData),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/items/" + itemId,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(itemData),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error("Não foi possível adicionar o produto.");
+        throw new Error("Não foi possível editar o produto.");
       }
 
       onClose();
@@ -46,7 +60,7 @@ const StockModal = ({ onClose }: Props) => {
     <div className="modal-bg">
       <div className="modal-container">
         <div className="modal-header">
-          <h1>Adicionar produto</h1>
+          <h1>Editar produto</h1>
           <div onClick={() => onClose()} className="close-modal">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -87,10 +101,10 @@ const StockModal = ({ onClose }: Props) => {
             }
           />
         </div>
-        <ButtonMain text="Adicionar" disabled={false} onClick={handleSave} />
+        <ButtonMain text="Salvar" disabled={false} onClick={handleSave} />
       </div>
     </div>
   );
 };
 
-export default StockModal;
+export default EditItemModal;

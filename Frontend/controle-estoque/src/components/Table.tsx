@@ -14,7 +14,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import type { CellContext } from "@tanstack/table-core";
-import StockEditModal from "./StockEditModal";
+import EditItemModal from "./EditItemModal";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -39,14 +39,14 @@ const Table = forwardRef((_, ref) => {
   const [data, setData] = useState<Item[]>([]);
   const [itemToEdit, setItemToEdit] = useState<Item>();
 
-  const [isStockEditModalVisible, setIsStockEditModalVisible] = useState(false);
+  const [isEditItemModalVisible, setIsEditItemModalVisible] = useState(false);
   function handleEditItem(item: Item) {
     setItemToEdit(item);
-    setIsStockEditModalVisible(true);
+    setIsEditItemModalVisible(true);
   }
 
-  function handleCloseStockEditModal() {
-    setIsStockEditModalVisible(false);
+  function handleCloseEditItemModal() {
+    setIsEditItemModalVisible(false);
     fetchData("");
   }
 
@@ -202,10 +202,10 @@ const Table = forwardRef((_, ref) => {
 
   return (
     <div className="table-container">
-      {isStockEditModalVisible && itemToEdit && (
-        <StockEditModal
+      {isEditItemModalVisible && itemToEdit && (
+        <EditItemModal
           itemToEdit={itemToEdit}
-          onClose={() => handleCloseStockEditModal()}
+          onClose={() => handleCloseEditItemModal()}
         />
       )}
       <table className="table-custom">

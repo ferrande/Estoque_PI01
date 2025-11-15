@@ -1,11 +1,11 @@
 import "./StockMain.css";
 import NavBar from "../components/NavBar";
 import Table from "../components/Table";
-import StockModal from "../components/StockModal";
+import AddItemModal from "../components/AddItemModal";
 import { useState, useRef } from "react";
 
 function StockMain() {
-  const [isStockModalVisible, setIsStockModalVisible] = useState(false);
+  const [isAddItemModalVisible, setIsAddItemModalVisible] = useState(false);
   const tableRef = useRef<{ reloadData: (inputSearch: string) => void } | null>(
     null
   );
@@ -18,11 +18,11 @@ function StockMain() {
   }
 
   function handleAddItem() {
-    setIsStockModalVisible(true);
+    setIsAddItemModalVisible(true);
   }
 
-  function handleCloseStockModal() {
-    setIsStockModalVisible(false);
+  function handleCloseAddItemModal() {
+    setIsAddItemModalVisible(false);
     if (tableRef.current) {
       tableRef.current.reloadData(inputSearch);
     }
@@ -33,8 +33,8 @@ function StockMain() {
   return (
     <>
       <NavBar />
-      {isStockModalVisible && (
-        <StockModal onClose={() => handleCloseStockModal()} />
+      {isAddItemModalVisible && (
+        <AddItemModal onClose={() => handleCloseAddItemModal()} />
       )}
       <div className="wrapper-main">
         <h1 className="heading-main">Estoque</h1>
