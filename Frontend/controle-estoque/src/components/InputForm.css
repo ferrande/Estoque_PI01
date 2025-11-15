@@ -15,6 +15,31 @@
     border-bottom-color: var(--btn-blue-base);
     color: var(--btn-blue-base);
   }
+
+  &::placeholder {
+    color: rgba(128, 128, 128, 0.4);
+    opacity: 1;
+  }
+
+  &::-webkit-input-placeholder {
+    color: rgba(128, 128, 128, 0.4);
+    opacity: 1;
+  }
+
+  &::-moz-placeholder {
+    color: rgba(128, 128, 128, 0.4);
+    opacity: 1;
+  }
+
+  &:-ms-input-placeholder {
+    color: rgba(128, 128, 128, 0.4);
+    opacity: 1;
+  }
+
+  &::-moz-selection {
+    color: rgba(128, 128, 128, 0.4);
+    opacity: 1;
+  }
 }
 
 .input-form-error {

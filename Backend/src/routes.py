@@ -177,7 +177,7 @@ def list_lots():
             'id': l.id,
             'number': l.number,
             'quantity': l.quantity,
-            'expiry_date': l.expiry_date,
+            'expiry_date': l.expiry_date.strftime('%d/%m/%Y'),
             'item_id': l.item_id
         } for l in lots
     ]
@@ -197,7 +197,8 @@ def edit_lot(id):
                 lot.number = str(data['number'])
                 lot.quantity = int(data['quantity'])
                 lot.expiry_date = datetime.strptime(data['expiry_date'], date_format)
-                lot.item_id = int(data['item_id'])
+                if 'item_id' in data:
+                    lot.item_id = int(data['item_id'])
                 session.commit() 
             else:
                 return jsonify({'erro': 'Lote não foi encontrado'}), 404
@@ -228,7 +229,24 @@ def get_lot(id):
             return jsonify({
                 'id': lot.id,
                 'quantity': lot.quantity,
-                'expiry_date': lot.expiry_date,
+                'expiry_date': lot.expiry_date.strftime('%d/%m/%Y'),
                 'item_id': lot.item_id,
             }), 200
         return jsonify({'erro': 'Lote não foi encontrado'}), 404
+    
+@api_bp.route('/lots/item/<int:id>', methods=['GET'])
+@login_required
+def get_lots_byId(id):
+
+    with SessionLocal() as session:
+        lots = session.query(Lot).filter_by(item_id=id)
+        list = [
+            {
+                'id': l.id,
+                'number': l.number,
+                'quantity': l.quantity,
+                'expiry_date': l.expiry_date.strftime('%d/%m/%Y'),
+                'item_id': l.item_id
+            } for l in lots
+        ]
+        return jsonify(list), 200

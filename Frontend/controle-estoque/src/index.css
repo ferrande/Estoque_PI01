@@ -21,9 +21,8 @@
   --feedback-error: #d41a1a;
   --feedback-error-darker: #a90a0a;
 
-  --stock-onstock: #0196da;
-  --stock-lowstock: #e78f2c;
-  --stock-nostock: #e4515e;
+  --primary-blue: #0f64e5;
+  --danger-red: #e4515e;
 }
 
 body {
