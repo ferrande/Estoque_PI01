@@ -12,84 +12,54 @@ Este repositório contém dois projetos separados:
 - **Python 3.10+**
 - **pip**
 
-### Passo 1: Criar o Ambiente Virtual (venv)
+### Passos
 
 ```bash
+# Passo 1
 cd Backend
 python -m venv venv
 ```
 
-#### Ativar o venv:
-
-**No Windows (PowerShell):**
-
 ```bash
-.\venv\Scripts\Activate.ps1
+# Escolha uma das opções
+.\venv\Scripts\Activate.ps1 # Windows (PowerShell)
+.\venv\Scripts\activate.bat # Windows (CMD)
+source venv/bin/activate  # No macOS/Linux
 ```
 
-**No Windows (CMD):**
-
 ```bash
-.\venv\Scripts\activate.bat
-```
-
-**No macOS/Linux:**
-
-```bash
-source venv/bin/activate
-```
-
-### Passo 2: Instalar Dependências
-
-```bash
+# Passo 2
 pip install -r requirements.txt
 ```
 
-### Passo 3: Executar a Aplicação
-
 ```bash
+# Passo 3
 py run.py
 ```
-
-A API estará disponível em `http://localhost:5000` (ou a porta configurada).
-
----
 
 ## 🖥️ Frontend (React)
 
 ### Pré-requisitos
 
-- **Node.js 18+** (verifique com: `node --version`)
-- **npm 9+** ou **yarn** (gerenciador de pacotes, vem com Node.js)
+- **Node.js 18+**
+- **npm 9+** ou **yarn**
 
-### Passo 1: Instalar Dependências
+### Passos
 
 ```bash
+# Passo 1
 cd Frontend/controle-estoque
 npm install
 ```
 
-### Passo 2: Executar em Desenvolvimento
-
 ```bash
+# Passo 2
 npm run dev
 ```
 
-A aplicação estará disponível em `http://localhost:5173` (ou a URL mostrada no terminal).
+## 🚀 Executar ambos simultaneamente
 
-### Passo 3: Build para Produção (Opcional)
-
-```bash
-npm run build
-```
-
----
-
-## 🚀 Executar Ambos Simultaneamente
-
-Abra dois terminais:
-
-**Terminal 1 - Backend:**
+### Terminal 1
 
 ```bash
 cd Backend
@@ -98,7 +68,7 @@ pip install -r requirements.txt
 python run.py
 ```
 
-**Terminal 2 - Frontend:**
+### Terminal 2
 
 ```bash
 cd Frontend/controle-estoque
